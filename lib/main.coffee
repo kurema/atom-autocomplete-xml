@@ -1,6 +1,4 @@
 provider = require './provider'
-utils = require './xml-utils'
-{CompositeDisposable} = require 'atom'
 
 module.exports =
   xpathView: null
@@ -18,14 +16,13 @@ module.exports =
       type: 'boolean'
       default: true
 
-  getProvider: -> provider
+    currentXsdPath:
+      title: 'Current Xsd Path'
+      description: 'Use defined xsd.'
+      type: 'string'
+      default: ''
 
-  activate: (state) ->
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @subscriptions = new CompositeDisposable
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'main:copyXpathToClipboard': => @copyXpathToClipboard()
-    @subscriptions.dispose()
+  getProvider: -> provider
 
   deactivate: ->
     @xpathView?.destroy()
@@ -35,11 +32,3 @@ module.exports =
     XPathStatusBarView = require './xpath-statusbar-view'
     @xpathView = new XPathStatusBarView().initialize(statusBar)
     @xpathView.attach()
-
-  copyXpathToClipboard: ->
-    editor = atom.workspace.getActiveTextEditor()
-    if editor
-      buffer = editor.getBuffer()
-      bufferPosition = editor.getCursorBufferPosition()
-      xpath = utils.getXPath buffer, bufferPosition, ''
-      atom.clipboard.write(xpath.join '/')

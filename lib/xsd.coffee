@@ -3,15 +3,17 @@ xsdParser = require './xsdParser'
 module.exports =
   types: {}
 
-
   ## Clear the data. This is the case of changing the XSD.
   clear: ->
     @types = {}
 
-
   ## Load a new XSD.
   load: (xmlPath, xsdUri, complete) ->
     # Get the protocol used to download the file.
+    definedXsdUri = atom.config.get 'autocomplete-xml.currentXsdPath'
+    if definedXsdUri isnt ""
+      xsdUri=definedXsdUri
+
     protocol = null
     if xsdUri.substr(0, 7) is "http://"
       protocol = require 'http'
